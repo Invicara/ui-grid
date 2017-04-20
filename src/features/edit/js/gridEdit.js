@@ -983,7 +983,31 @@
                     }
                   });
 
-                  $elm.on('blur', $scope.stopEdit);
+                  var children = $elm[0].form.children;
+                  for(var i=0; i < children.length; i++){
+
+                    $(children[i]).on('blur', function(){
+                      var hasFocus = false;
+                    
+                      for(var ii=0; ii < children.length; ii++){
+                        if($(children[ii]).is(':focus') || $(children[ii]).is(':active')){
+                          hasFocus = true;
+                        }
+                      }
+
+                      if(!hasFocus){
+                        $scope.stopEdit();
+                      }
+
+                    });
+
+                    // if($elm !== $(children[i])){
+                      $(children[i]).on('change', function(){
+                        $elm[0].focus();
+                      });
+                    // }
+                  }
+                  // $elm.on('blur', $scope.stopEdit);
                 });
 
 
@@ -1048,8 +1072,12 @@
                 });
 
                 $scope.$on('$destroy', function unbindEvents() {
+                  var children = $elm[0].form.children;
+                  for(var i=0; i < children.length; i++){
+                    $(children[i]).off();
+                  }
                   // unbind all jquery events in order to avoid memory leaks
-                  $elm.off();
+                  // $elm.off();
                 });
               }
             };
